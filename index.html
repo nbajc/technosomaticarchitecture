@@ -3,229 +3,984 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
     <title>Technosomatic Architecture | Natasha Bajc</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
-        
         :root {
-            --bg-color: #ffffff;
-            --text-color: #050505;
-            --accent-color: #ff3333;
+            --bg: #ffffff;
+            --ink: #0c0c0c;
+            --red: #c8001e;
+            --gray: #707070;
+            --border: #e0e0e0;
+            --white: #ffffff;
+            --nav-w: 280px;
         }
-
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; font-size: 16px; background: #ffffff; }
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background: #ffffff;
+            color: var(--ink);
+            font-family: 'Cormorant Garamond', serif;
             overflow-x: hidden;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--ink); }
 
-        h1, h2, h3, h4, .mono {
+        /* NAV */
+        nav {
+            position: fixed; top: 0; left: 0;
+            width: var(--nav-w); height: 100vh;
+            border-right: 1px solid var(--border);
+            background: var(--bg);
+            display: flex; flex-direction: column;
+            justify-content: space-between;
+            padding: 3rem 2rem; z-index: 100;
+            overflow-y: auto;
+        }
+        .nav-title { font-family: 'Space Mono', monospace; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; line-height: 1.4; margin-bottom: 0.75rem; }
+        .nav-status { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2.5rem; }
+        .pulse-dot { width: 6px; height: 6px; background: var(--red); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.8); } }
+        .nav-status span { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--gray); text-transform: uppercase; letter-spacing: 0.1em; }
+        nav ul { list-style: none; }
+        nav ul li { margin-bottom: 0.15rem; }
+        nav ul li a { display: flex; align-items: center; gap: 0.75rem; font-family: 'Space Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray); text-decoration: none; padding: 0.6rem 0; transition: color 0.2s; }
+        nav ul li a::before { content: ''; width: 16px; height: 1px; background: var(--border); transition: width 0.3s, background 0.2s; flex-shrink: 0; }
+        nav ul li a:hover, nav ul li a.active { color: var(--ink); }
+        nav ul li a:hover::before, nav ul li a.active::before { width: 28px; background: var(--red); }
+        .nav-logo-wrap { margin-bottom: 1rem; padding-bottom: 1rem; }
+        .nav-logo { width: 100%; max-width: 200px; display: block; mix-blend-mode: multiply; opacity: 0.88; pointer-events: none; -webkit-user-drag: none; }
+        .nav-lacan { font-family: 'Cormorant Garamond', serif; font-size: 0.82rem; font-style: italic; color: var(--red); line-height: 1.5; margin-bottom: 1.25rem; }
+        .nav-meta { font-family: 'Space Mono', monospace; font-size: 0.62rem; color: #c0c0c0; line-height: 2; text-transform: uppercase; letter-spacing: 0.06em; }
+
+        /* HAMBURGER */
+        .hamburger { display: none; position: fixed; top: 1.25rem; right: 1.25rem; z-index: 200; background: var(--ink); border: none; cursor: pointer; padding: 0.7rem; flex-direction: column; gap: 4px; }
+        .hamburger span { display: block; width: 22px; height: 1px; background: var(--bg); transition: all 0.3s; }
+        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(3px, 3px); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(3px, -3px); }
+
+        /* MAIN */
+        main { margin-left: var(--nav-w); }
+        section { border-bottom: 1px solid var(--border); }
+
+        /* IMAGE PROTECTION */
+        img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
+        .img-block { position: relative; overflow: hidden; margin-bottom: 0.75rem; cursor: pointer; }
+        .img-block img { width: 100%; display: block; filter: grayscale(100%) contrast(112%); transition: filter 0.7s ease, transform 0.7s ease; }
+        .img-block:hover img { filter: grayscale(0%) contrast(100%); transform: scale(1.015); }
+        /* Always color — groups that skip the grayscale treatment */
+        .img-block--color img { filter: none; }
+        .img-block--color:hover img { filter: none; transform: scale(1.015); }
+        .img-shield { position: absolute; inset: 0; z-index: 2; background: transparent; cursor: pointer; }
+        .img-caption { font-family: 'Space Mono', monospace; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray); padding-top: 0.6rem; border-top: 1px solid var(--border); pointer-events: none; }
+
+        /* HERO */
+        #hero { min-height: 100vh; display: grid; grid-template-rows: 1fr auto; position: relative; }
+        .hero-image-wrap { position: relative; overflow: hidden; background: var(--bg); }
+        .hero-image-wrap img { width: 100%; height: auto; max-height: 82vh; object-fit: contain; display: block; padding: 1.5rem 3rem 0; transition: transform 1s ease; pointer-events: none; }
+        .hero-image-wrap:hover img { transform: scale(1.012); }
+        .hero-image-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 35%; background: linear-gradient(to top, #ffffff 0%, transparent 100%); pointer-events: none; }
+        .hero-shield { position: absolute; inset: 0; z-index: 3; background: transparent; cursor: pointer; }
+        .hero-fig { position: absolute; bottom: 1rem; left: 2rem; font-family: 'Space Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gray); z-index: 4; pointer-events: none; }
+        .hero-text { padding: 3rem 4rem 4rem; border-top: 1px solid var(--border); position: relative; }
+        .hero-lacan-quote { display: block; background: #efefef; padding: 1.4rem 2rem 1.2rem; margin-bottom: 2.5rem; }
+        .hero-lacan-quote .lacan-words { display: block; font-family: 'Cormorant Garamond', serif; font-size: clamp(1.5rem, 3vw, 2.5rem); font-style: italic; font-weight: 700; color: var(--red); line-height: 1.2; margin-bottom: 0.75rem; }
+        .hero-lacan-quote .lacan-attr { display: flex; justify-content: flex-end; gap: 0.5rem; font-family: 'Space Mono', monospace; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--red); }
+        .hero-lacan-quote .lacan-seminar { font-size: 0.6rem; }
+        .hero-lacan-quote .lacan-name { font-size: 0.95rem; }
+        .hero-text h2 { font-size: clamp(2.5rem, 5vw, 5.5rem); font-weight: 300; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 2rem; }
+        .hero-text h2 em { font-family: 'Courier New', Courier, monospace; font-style: normal; font-weight: 700; color: var(--red); font-size: 0.7em; letter-spacing: -0.03em; }
+        .hero-quote { max-width: 640px; font-size: 1.2rem; line-height: 1.7; color: var(--gray); font-weight: 300; font-style: italic; border-left: 2px solid var(--red); padding-left: 1.5rem; }
+
+        /* SECTION LABEL */
+        .section-label { display: inline-flex; align-items: center; gap: 0.6rem; font-family: 'Space Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.14em; position: sticky; top: 2rem; }
+        .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+
+        /* TWO-COL */
+        .two-col { display: grid; grid-template-columns: 220px 1fr; gap: 5rem; }
+        .manifesto-label-col { padding-top: 0.25rem; }
+        .manifesto-content h3 { font-size: 1.9rem; font-weight: 400; margin-bottom: 1.5rem; letter-spacing: -0.01em; }
+        .manifesto-content p { font-size: 1.2rem; line-height: 1.8; color: #1a1a1a; font-weight: 300; margin-bottom: 3rem; }
+        .manifesto-content p strong { font-weight: 500; color: var(--ink); }
+
+        .black-card { background: var(--ink); color: var(--bg); padding: 3rem; margin-top: 3rem; }
+        .black-card h3 { font-family: 'Space Mono', monospace; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1.25rem; color: var(--red); }
+        .black-card p { font-size: 1.25rem; line-height: 1.75; color: rgba(247,245,240,0.8); font-weight: 300; }
+
+        .img-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3rem; }
+
+        /* TAXONOMY */
+        .taxonomy-item { margin-bottom: 6rem; padding-bottom: 6rem; border-bottom: 1px solid var(--border); }
+        .taxonomy-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .taxonomy-header { display: flex; align-items: baseline; gap: 1.5rem; margin-bottom: 1rem; }
+        .taxonomy-num { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--red); letter-spacing: 0.1em; text-transform: uppercase; }
+        .taxonomy-item h4 { font-size: 2.2rem; font-weight: 300; letter-spacing: -0.02em; }
+        .taxonomy-sub { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--gray); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.75rem; padding-left: calc(2.2rem + 1.5rem + 0.5rem); }
+        .taxonomy-item p { font-size: 1.15rem; line-height: 1.85; color: #333; font-weight: 300; max-width: 720px; margin-bottom: 2.5rem; }
+        .taxonomy-images { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+        .taxonomy-images .img-block:first-child { grid-column: span 2; }
+        .taxonomy-images-4 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+        /* ZIZEK ASIDE */
+        /* SUBGROUPS inside taxonomy items */
+        .subgroup { margin-top: 2.5rem; }
+        .subgroup-label {
             font-family: 'Space Mono', monospace;
+            font-size: 0.6rem;
             text-transform: uppercase;
-            letter-spacing: -0.05em;
+            letter-spacing: 0.16em;
+            color: var(--red);
+            margin-bottom: 1rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .subgroup-grid {
+            display: grid;
+            gap: 0.75rem;
+        }
+        .subgroup-grid--3 { grid-template-columns: 1fr 1fr 1fr; }
+        .subgroup-grid--5 { grid-template-columns: repeat(5, 1fr); }
+
+        @media (max-width: 1024px) {
+            .subgroup-grid--3 { grid-template-columns: 1fr 1fr; }
+            .subgroup-grid--5 { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 600px) {
+            .subgroup-grid--3 { grid-template-columns: 1fr; }
+            .subgroup-grid--5 { grid-template-columns: 1fr; }
         }
 
-        html {
-            scroll-behavior: smooth;
+        .zizek-aside { border-left: 2px solid var(--red); padding: 1.5rem 2rem; background: rgba(0,0,0,0.03); margin: 2rem 0 2.5rem; }
+        .zizek-aside-label { font-family: 'Space Mono', monospace; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--red); margin-bottom: 0.75rem; }
+        .zizek-aside p { font-size: 1.1rem !important; line-height: 1.75 !important; color: #444 !important; font-style: italic; margin-bottom: 0 !important; }
+
+        /* STATEMENT */
+        .statement-pullquote { font-size: clamp(1.6rem, 3vw, 3rem); font-weight: 300; line-height: 1.3; letter-spacing: -0.01em; margin-bottom: 3rem; max-width: 800px; }
+        .statement-pullquote span { font-style: italic; color: var(--red); }
+        #statement p { font-size: 1.2rem; line-height: 1.85; color: #333; font-weight: 300; max-width: 680px; margin-bottom: 2rem; }
+        #statement p em { font-style: italic; }
+        #statement p strong { font-weight: 500; color: var(--ink); }
+        .statement-images { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin: 3rem 0; }
+
+        /* GALLERY */
+        #gallery { padding: 6rem 4rem; background: var(--ink); }
+        .gallery-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 3rem; border-bottom: 1px solid rgba(247,245,240,0.15); padding-bottom: 1.5rem; }
+        .gallery-title { font-family: 'Space Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(247,245,240,0.4); }
+        .gallery-count { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: rgba(247,245,240,0.25); letter-spacing: 0.1em; }
+        .gallery-section-label { font-family: 'Space Mono', monospace; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--red); margin-bottom: 1.25rem; margin-top: 3.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(247,245,240,0.1); }
+        .gallery-section-label:first-child { margin-top: 0; }
+        .gallery-grid { columns: 3; column-gap: 0.75rem; }
+        .gallery-item { break-inside: avoid; margin-bottom: 0.75rem; overflow: hidden; position: relative; }
+        .gallery-item img { width: 100%; display: block; filter: grayscale(100%) contrast(110%) brightness(0.9); transition: filter 0.5s, transform 0.5s; pointer-events: none; }
+        .gallery-item:hover img { filter: grayscale(0%) contrast(100%) brightness(1); transform: scale(1.02); }
+
+        /* LIGHTBOX */
+        .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 9999; align-items: center; justify-content: center; padding: 2rem; }
+        .lightbox.open { display: flex; }
+        .lightbox-inner { position: relative; display: flex; align-items: center; justify-content: center; }
+        .lightbox-watermark-repeat { position: absolute; inset: 0; z-index: 9; pointer-events: none; overflow: hidden; }
+        .lightbox-watermark-repeat::before {
+            content: '© NATASHA BAJC   ALL RIGHTS RESERVED   TECHNOSOMATIC ARCHITECTURE   © NATASHA BAJC   ALL RIGHTS RESERVED   ';
+            position: absolute; top: 50%; left: -100%; width: 300%;
+            font-family: 'Space Mono', monospace; font-size: 0.55rem;
+            color: rgba(255,255,255,0.055); letter-spacing: 0.18em;
+            transform: rotate(-28deg); white-space: nowrap;
+            text-shadow: 0 45px 0 rgba(255,255,255,0.055), 0 90px 0 rgba(255,255,255,0.055), 0 135px 0 rgba(255,255,255,0.055), 0 -45px 0 rgba(255,255,255,0.055), 0 -90px 0 rgba(255,255,255,0.055);
+        }
+        .lightbox-watermark-corner { position: absolute; bottom: 1rem; right: 1.25rem; z-index: 11; pointer-events: none; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.14em; text-align: right; line-height: 1.8; }
+        .lightbox img { max-width: 88vw; max-height: 84vh; object-fit: contain; display: block; pointer-events: none; -webkit-user-drag: none; position: relative; z-index: 1; }
+        .lightbox-close { position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: 1px solid rgba(255,255,255,0.3); color: white; font-family: 'Space Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.5rem 1rem; cursor: pointer; transition: border-color 0.2s; z-index: 100; }
+        .lightbox-close:hover { border-color: var(--red); color: var(--red); }
+        .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); background: none; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); font-family: 'Space Mono', monospace; font-size: 1rem; padding: 1rem 0.75rem; cursor: pointer; transition: border-color 0.2s, color 0.2s; z-index: 100; }
+        .lightbox-nav:hover { border-color: var(--red); color: var(--red); }
+        .lightbox-prev { left: 1.5rem; }
+        .lightbox-next { right: 1.5rem; }
+        .lightbox-counter { position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%); font-family: 'Space Mono', monospace; font-size: 0.6rem; color: rgba(255,255,255,0.3); letter-spacing: 0.1em; text-transform: uppercase; z-index: 100; white-space: nowrap; }
+        .lightbox-caption { position: absolute; bottom: 1.5rem; left: 1.5rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: rgba(255,255,255,0.25); letter-spacing: 0.1em; text-transform: uppercase; z-index: 100; }
+
+        /* FOOTER */
+        footer { background: var(--ink); color: var(--bg); padding: 5rem 4rem; border-top: 1px solid #1a1a1a; }
+        .footer-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4rem; margin-bottom: 4rem; }
+        .footer-name { font-size: 2.5rem; font-weight: 300; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+        .footer-role { font-family: 'Space Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(247,245,240,0.35); }
+        .footer-col h5 { font-family: 'Space Mono', monospace; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--red); margin-bottom: 1.25rem; }
+        .footer-col p, .footer-col a { font-size: 1rem; line-height: 2; color: rgba(247,245,240,0.55); text-decoration: none; display: block; transition: color 0.2s; }
+        .footer-col a:hover { color: var(--bg); }
+        .contact-box { display: inline-block; border: 1px solid rgba(247,245,240,0.25) !important; padding: 0.5rem 1.25rem; font-family: 'Space Mono', monospace; font-size: 0.65rem !important; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(247,245,240,0.55) !important; text-decoration: none; transition: border-color 0.2s, color 0.2s, background 0.2s; margin-right: 0.5rem; line-height: 1 !important; }
+        .contact-box:hover { border-color: var(--red) !important; color: var(--bg) !important; background: var(--red); }
+        .footer-bottom { border-top: 1px solid rgba(247,245,240,0.1); padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .footer-bottom p { font-family: 'Space Mono', monospace; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(247,245,240,0.2); }
+
+        /* REVEAL */
+        .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* GLITCH */
+        @keyframes glitch {
+            0%, 95%, 100% { clip-path: none; transform: none; }
+            96% { clip-path: inset(20% 0 60% 0); transform: translate(-3px, 0); }
+            97% { clip-path: inset(50% 0 20% 0); transform: translate(3px, 0); }
+            98% { clip-path: inset(30% 0 40% 0); transform: translate(-2px, 0); }
+            99% { clip-path: none; transform: none; }
+        }
+        .glitch-text { position: relative; display: inline-block; }
+        .glitch-text::after { content: attr(data-text); position: absolute; top: 0; left: 0; color: var(--red); animation: glitch 8s infinite; }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            nav { transform: translateX(-100%); transition: transform 0.3s ease; }
+            nav.mobile-open { transform: translateX(0); }
+            .hamburger { display: flex; }
+            main { margin-left: 0; }
+            .two-col { grid-template-columns: 1fr; gap: 2rem; }
+            .section-label { position: static; }
+            #manifesto .two-col, #taxonomy .two-col, #statement .two-col { padding: 4rem 2rem; }
+            .hero-text { padding: 2rem 1.5rem 3rem; }
+            #gallery { padding: 4rem 2rem; }
+            .img-pair { grid-template-columns: 1fr; }
+            .taxonomy-images { grid-template-columns: 1fr 1fr; }
+            .taxonomy-images .img-block:first-child { grid-column: span 2; }
+            .taxonomy-images-4 { grid-template-columns: 1fr 1fr; }
+            .statement-images { grid-template-columns: 1fr; }
+            .gallery-grid { columns: 2; }
+            .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .footer-bottom { flex-direction: column; gap: 1rem; align-items: flex-start; }
+            .lightbox-prev { left: 0.5rem; }
+            .lightbox-next { right: 0.5rem; }
+            footer { padding: 4rem 2rem; }
+        }
+        @media (max-width: 600px) {
+            .taxonomy-images { grid-template-columns: 1fr; }
+            .taxonomy-images .img-block:first-child { grid-column: span 1; }
+            .taxonomy-images-4 { grid-template-columns: 1fr; }
+            .gallery-grid { columns: 1; }
+            .hero-text h2 { font-size: 2.2rem; }
+            .lightbox-nav { display: none; }
         }
 
-        .image-container {
+        /* TELEPORTATION: fixed-height uniform display */
+        .subgroup-grid--teleportation .img-block img {
+            height: 260px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        /* VIDEO POPUP */
+        .video-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.97);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+        .video-lightbox.open { display: flex; }
+        .video-lightbox-inner {
+            position: relative;
+            width: min(90vw, 1100px);
+        }
+        .video-yt-wrap {
             position: relative;
             width: 100%;
-            overflow: hidden;
-            border: 1px solid #e5e5e5;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
         }
-
-        .image-container img {
+        .video-yt-wrap iframe {
+            position: absolute;
+            inset: 0;
             width: 100%;
-            height: auto;
+            height: 100%;
             display: block;
-            filter: grayscale(100%) contrast(110%);
-            transition: filter 0.5s ease;
+            border: none;
         }
-
-        .image-container:hover img {
-            filter: grayscale(0%) contrast(100%);
-        }
-
-        .caption {
+        .video-lightbox-close {
+            position: absolute;
+            top: -2.75rem; right: 0;
+            background: none;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
             font-family: 'Space Mono', monospace;
-            font-size: 0.75rem;
-            border-top: 1px solid black;
-            padding-top: 0.5rem;
-            margin-top: 0.5rem;
-            display: inline-block;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: border-color 0.2s, color 0.2s;
+            white-space: nowrap;
+        }
+        .video-lightbox-close:hover { border-color: var(--red); color: var(--red); }
+
+        /* VIDEO PLACEHOLDER CARD */
+        .video-placeholder {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            background: var(--ink);
+            margin-top: 2rem;
+        }
+        .video-placeholder img {
+            width: 100%;
+            display: block;
+            filter: grayscale(30%) brightness(0.55);
+            transition: filter 0.5s, transform 0.6s;
+            pointer-events: none;
+            -webkit-user-drag: none;
+        }
+        .video-placeholder:hover img {
+            filter: grayscale(0%) brightness(0.7);
+            transform: scale(1.02);
+        }
+        .video-placeholder-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.25rem;
+            pointer-events: none;
+        }
+        .video-play-btn {
+            width: 72px; height: 72px;
+            border: 2px solid rgba(255,255,255,0.85);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.3s, background 0.3s;
+        }
+        .video-placeholder:hover .video-play-btn {
+            border-color: var(--red);
+            background: rgba(200,0,30,0.15);
+        }
+        .video-play-btn::after {
+            content: '';
+            display: block;
+            width: 0; height: 0;
+            border-top: 12px solid transparent;
+            border-bottom: 12px solid transparent;
+            border-left: 20px solid rgba(255,255,255,0.9);
+            margin-left: 5px;
+            transition: border-left-color 0.3s;
+        }
+        .video-placeholder:hover .video-play-btn::after { border-left-color: var(--red); }
+        .video-placeholder-desc {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: rgba(255,255,255,0.65);
+            text-align: center;
+            line-height: 2;
+            pointer-events: none;
+        }
+        .video-placeholder-desc span {
+            display: block;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            font-style: italic;
+            font-weight: 300;
+            letter-spacing: 0.03em;
+            color: rgba(255,255,255,0.85);
+            text-transform: none;
+            margin-bottom: 0.25rem;
         }
     </style>
 </head>
-<body class="flex flex-col lg:flex-row">
+<body>
 
-    <nav class="w-full lg:w-72 lg:h-screen lg:fixed top-0 left-0 border-r border-gray-200 p-8 flex flex-col justify-between z-50 bg-white">
-        <div>
-            <div class="mb-12">
-                <h1 class="text-2xl font-bold leading-none tracking-tighter">Technosomatic<br>Architecture</h1>
-                <div class="mt-4 flex items-center space-x-2">
-                    <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
-                    <span class="text-xs font-mono text-gray-500">System Online</span>
-                </div>
+
+    <!-- VIDEO LIGHTBOX -->
+    <div class="video-lightbox" id="video-lightbox">
+        <div class="video-lightbox-inner">
+            <button class="video-lightbox-close" id="video-lightbox-close">&#x2715; Close</button>
+            <div class="video-yt-wrap">
+                <iframe id="yt-player"
+                    src=""
+                    data-src="https://www.youtube.com/embed/XRtWuHEEy6Q?autoplay=1&rel=0&modestbranding=1"
+                    frameborder="0"
+                    allow="autoplay; fullscreen; accelerometer; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
             </div>
-            
-            <ul class="space-y-4 text-sm font-mono">
-                <li><a href="#hero" class="block hover:translate-x-2 transition-transform">00. [FIG I] Interface</a></li>
-                <li><a href="#manifesto" class="block hover:translate-x-2 transition-transform">01. Manifesto</a></li>
-                <li><a href="#taxonomy" class="block hover:translate-x-2 transition-transform">02. Taxonomy</a></li>
-                <li><a href="#statement" class="block hover:translate-x-2 transition-transform">03. Statement</a></li>
-                <li><a href="#contact" class="block hover:translate-x-2 transition-transform">04. Contact</a></li>
+        </div>
+    </div>
+
+    <!-- HAMBURGER -->
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+
+    <!-- LIGHTBOX -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightbox-close">&#x2715; Close</button>
+        <button class="lightbox-nav lightbox-prev" id="lightbox-prev">&#8592;</button>
+        <button class="lightbox-nav lightbox-next" id="lightbox-next">&#8594;</button>
+        <div class="lightbox-inner">
+            <div class="lightbox-watermark-repeat"></div>
+            <img id="lightbox-img" src="" alt="" draggable="false">
+            <div class="lightbox-watermark-corner">&#169; Natasha Bajc<br>All Rights Reserved</div>
+        </div>
+        <div class="lightbox-caption" id="lightbox-caption"></div>
+        <div class="lightbox-counter" id="lightbox-counter"></div>
+    </div>
+
+    <!-- NAV -->
+    <nav id="nav">
+        <div>
+            <div class="nav-logo-wrap">
+                <img src="technosomaticLOGO.png" alt="Logo" class="nav-logo" draggable="false">
+            </div>
+            <div class="nav-title">Technosomatic<br>Architecture</div>
+            <div class="nav-lacan">&#8220;Il n&#8217;y a pas de rapport sexuel.&#8221;</div>
+            <div class="nav-status">
+                <div class="pulse-dot"></div>
+                <span>System Online</span>
+            </div>
+            <ul>
+                <li><a href="#hero" data-section="hero">00. [Fig I] Interface</a></li>
+                <li><a href="#manifesto" data-section="manifesto">01. Manifesto</a></li>
+                <li><a href="#taxonomy" data-section="taxonomy">02. Taxonomy</a></li>
+                <li><a href="#statement" data-section="statement">03. Statement</a></li>
+                <li><a href="#gallery" data-section="gallery">04. Archive</a></li>
+                <li><a href="#contact" data-section="contact">05. Contact</a></li>
             </ul>
         </div>
-
-        <div class="hidden lg:block space-y-2 text-xs text-gray-400 font-mono">
+        <div class="nav-meta">
             <p>Subject: The Synthetic Couple</p>
             <p>Loc: The Digital Void</p>
             <p>Status: Autopsy in Progress</p>
         </div>
     </nav>
 
-    <main class="flex-1 lg:ml-72 relative">
-
-        <section id="hero" class="min-h-screen flex flex-col justify-center p-4 lg:p-20 border-b border-gray-100">
-            <div class="image-container mb-8 aspect-video">
-                <img src="Image1.jpg" alt="Technosomatic Hero Image" class="object-cover w-full h-full">
+    <main>
+        <!-- HERO -->
+        <section id="hero">
+            <div class="hero-image-wrap">
+                <img src="HeroImage.png" alt="The Technosomatic Architecture &#8212; Homunculus Diagram" draggable="false">
+                <div class="hero-image-overlay"></div>
+                <div class="hero-fig">Fig I. The Digital Prophylactic</div>
+                <div class="hero-shield" data-src="HeroImage.png" data-cap="Fig I. The Digital Prophylactic"></div>
             </div>
-            <div class="max-w-4xl">
-                <span class="caption">FIG I. THE DIGITAL PROPHYLACTIC</span>
-                <h2 class="text-4xl lg:text-7xl font-light leading-none mt-6 mb-8">
-                    An autopsy on the <br><span class="italic font-serif">digital interface</span>.
+            <div class="hero-text">
+                <div class="hero-lacan-quote reveal">
+                    <span class="lacan-words">&#8220;There is no such thing as a sexual relationship.&#8221;</span>
+                    <span class="lacan-attr"><span class="lacan-seminar">Seminar XX</span><span class="lacan-name">Lacan</span></span>
+                </div>
+                <h2 class="reveal reveal-delay-2">
+                    An autopsy on<br>the <em class="glitch-text" data-text="digital interface">digital interface</em>.
                 </h2>
-                <p class="text-xl max-w-2xl font-light text-gray-800">
-                    "Through the lens of the female gaze, I perform an autopsy on the digital interface—treating it not as a tool for optimization, but as a site of visceral, structural friction."
+                <p class="hero-quote reveal reveal-delay-3">
+                    &#8220;Through the lens of the female gaze, I perform an autopsy on the digital interface&#8212;treating it not as a tool for optimization, but as a site of visceral, structural friction. What the digital couple mistakes for intimacy is merely the <em>semblant</em>: a screen onto which fantasy is endlessly projected.&#8221;
                 </p>
             </div>
         </section>
 
-        <section id="manifesto" class="p-8 lg:p-20 border-b border-gray-100">
-            <div class="flex flex-col lg:flex-row gap-12">
-                <div class="lg:w-1/3">
-                    <span class="bg-black text-white px-2 py-1 font-mono text-xs">01. MANIFESTO</span>
+        <!-- MANIFESTO -->
+        <section id="manifesto">
+            <div class="two-col" style="padding:6rem 4rem;">
+                <div class="manifesto-label-col reveal">
+                    <div class="section-label">01. Manifesto</div>
                 </div>
-                <div class="lg:w-2/3 space-y-12">
-                    <div>
-                        <h3 class="text-xl font-bold mb-4">The Digital Prophylactic</h3>
-                        <p class="text-lg leading-relaxed text-gray-600">
-                            <span class="font-medium">Modern architecture of the digital realm</span> functions as a technological membrane. The Digital Prophylactic is the primary infrastructure of contemporary intimacy—a sterile sanctuary that provides the architecture for connection while ensuring the subject remains permanently, physically quarantined.
-                        </p>
-                    </div>
+                <div class="manifesto-content">
+                    <h3 class="reveal">The Digital Prophylactic</h3>
 
-                    <div class="image-container aspect-[4/3]">
-                        <img src="Image2.jpg" alt="Manifesto Visualization" class="object-cover w-full h-full">
-                    </div>
-                    <span class="caption">FIG II. THE ECONOMY OF THE PHANTOM</span>
-
-                    <div class="bg-black text-white p-8">
-                        <h3 class="text-xl font-bold mb-4 font-mono">The Economy of the Phantom</h3>
-                        <p class="text-lg leading-relaxed text-gray-300">
-                            I expose the market of contemporary desire: Swipe. Trade pics. Negotiate worth. In this economy, chemistry is replaced by convenience and intimacy by mere access. Everyone is horny; no one is human.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="taxonomy" class="p-8 lg:p-20 border-b border-gray-100 bg-gray-50">
-            <div class="flex flex-col lg:flex-row gap-12">
-                <div class="lg:w-1/3">
-                    <span class="bg-black text-white px-2 py-1 font-mono text-xs">02. TAXONOMY</span>
-                </div>
-                <div class="lg:w-2/3">
-                    
-                    <div class="grid grid-cols-1 gap-16">
-                        
-                        <div>
-                            <h4 class="text-2xl mb-2">I. The Phantom Emotion</h4>
-                            <p class="font-mono text-xs text-gray-400 mb-4">(The Pseudo-Partner)</p>
-                            <p class="text-gray-700 mb-8">
-                                I document the 'teleportation' of intimacy between individuals who have spent years building an alternate reality through screens. In this space, the partner is not a 'loved one' in the traditional sense, but a Phantom—a vivid, persistent projection of shared history and digital habit.
-                            </p>
-                            
-                            <div class="image-container aspect-video">
-                                <img src="picture6.png" alt="Phantom Emotion Visualization" class="object-cover w-full h-full">
-                            </div>
-                            <span class="caption">FIG III. PHANTOM EMOTION</span>
-                        </div>
-
-                        <div class="border-l-2 border-black pl-6">
-                            <h4 class="text-2xl mb-2">II. The Digital Void</h4>
-                            <p class="font-mono text-xs text-gray-400 mb-4">(The Sterile Sanctuary)</p>
-                            <p class="text-gray-700 mb-8">
-                                I define the digital interface as a Void—a non-place where these persistent relationships are housed. This space is a 'dead end' where the illusion of the other terminates. For the digital couple, the Void is their only shared geography; it is a sterile sanctuary engineered for a connection that remains permanently physically quarantined.
-                            </p>
-
-                            <div class="image-container aspect-video">
-                                <img src="picture7.png" alt="Digital Void Visualization" class="object-cover w-full h-full">
-                            </div>
-                            <span class="caption">FIG IV. THE VOID</span>
-                        </div>
-
-                        <div>
-                            <h4 class="text-2xl mb-2">III. The Biological Glitch</h4>
-                            <p class="font-mono text-xs text-gray-400 mb-4">(Auto-Erotic Devolution)</p>
-                            <p class="text-gray-700 mb-8">
-                                The climax of this displacement is the Biological Glitch. The Technosomatic Homunculus—the brain’s map of the other—fuses with the digital signal, triggering a profound physiological climax in a sensory vacuum. It is an auto-erotic devolution where the 'relationship' eventually collapses into the self.
-                            </p>
-
-                            <div class="image-container aspect-video">
-                                <img src="picture8.png" alt="Biological Glitch Visualization" class="object-cover w-full h-full">
-                            </div>
-                            <span class="caption">FIG V. BIOLOGICAL GLITCH</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="statement" class="p-8 lg:p-20">
-            <div class="flex flex-col lg:flex-row gap-12">
-                <div class="lg:w-1/3">
-                    <span class="bg-black text-white px-2 py-1 font-mono text-xs">03. STATEMENT</span>
-                </div>
-                <div class="lg:w-2/3 space-y-8">
-                    <h3 class="text-3xl font-light leading-tight">
-                        "Technosomatic Architecture utilizes the <span class="font-medium">female gaze</span> as a clinical lens."
-                    </h3>
-                    
-                    <p class="text-lg text-gray-600">
-                        Moving away from the voyeuristic "God’s-eye view" of <span class="font-medium text-black">traditional representation</span>, my work investigates the Synthetic Couple. By integrating the precision of structural engineering with the nuances of affective computing, I explore how digital mediums act as both conduits for lived sensation and the very armor that shields us from it.
+                    <p class="reveal reveal-delay-1">
+                        <strong>Modern architecture of the digital realm</strong> functions as a technological membrane&#8212;what Lacan would recognize as the ultimate <em>objet petit a</em>: the object-cause of desire that can never be possessed, only endlessly approached. The Digital Prophylactic is the primary infrastructure of contemporary intimacy; a sterile sanctuary engineered for connection that guarantees, by its very structure, that the Real of the other will never be encountered.
                     </p>
 
-                    <div class="image-container aspect-square md:aspect-video">
-                        <img src="Image4.jpg" alt="Artist Statement Visualization" class="object-cover w-full h-full">
+                    <div class="subgroup reveal reveal-delay-2">
+                        <div class="subgroup-label">&#8212; The Logistics of the Phantom</div>
+                        <div class="subgroup-grid subgroup-grid--3" style="grid-template-columns:1fr 1fr;">
+                            <div class="img-block" data-src="Picture2.jpg" data-cap="The Logistics of the Phantom I">
+                                <img src="Picture2.jpg" alt="The Logistics of the Phantom I" draggable="false">
+                                <div class="img-shield"></div>
+                                <div class="img-caption">Fig II. The Logistics of the Phantom I</div>
+                            </div>
+                            <div class="img-block" data-src="Picture3.jpg" data-cap="The Logistics of the Phantom II">
+                                <img src="Picture3.jpg" alt="The Logistics of the Phantom II" draggable="false">
+                                <div class="img-shield"></div>
+                                <div class="img-caption">Fig IIb. The Logistics of the Phantom II</div>
+                            </div>
+                        </div>
                     </div>
-                    <span class="caption">FIG VI. THE MEETING WITH THE REAL</span>
 
-                    <p class="text-lg text-gray-600">
-                        Through this pro-feminist reclamation of the somatic, I challenge the viewer to confront a reality where the digital interface is not a bridge, but a mirror, and where we are never more alone than when we are "together."
-                    </p>
+                    <div class="black-card reveal reveal-delay-3">
+                        <h3>The Economy of the Phantom</h3>
+                        <p>&#381;i&#382;ek argues that ideology functions most effectively when we know it is ideology&#8212;and still act as though we do not. The digital marketplace of desire operates identically: we know it is simulation, and swipe anyway. Swipe. Trade pics. Negotiate worth. In this symbolic economy, chemistry is replaced by convenience, intimacy by mere access. The subject discovers not connection but its own lack, reflected back as infinite scroll. Everyone is horny; no one is human.</p>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <footer id="contact" class="p-8 lg:p-20 border-t border-black bg-black text-white">
-            <div class="flex justify-between items-end">
+        <!-- TAXONOMY -->
+        <section id="taxonomy">
+            <div class="two-col" style="padding:6rem 4rem;">
+                <div class="manifesto-label-col reveal">
+                    <div class="section-label">02. Taxonomy</div>
+                </div>
                 <div>
-                    <h2 class="text-4xl font-mono mb-4">Natasha Bajc</h2>
-                    <p class="text-sm text-gray-400">Technosomatic Architecture</p>
+                    <!-- I -->
+                    <div class="taxonomy-item">
+                        <div class="taxonomy-header">
+                            <span class="taxonomy-num">I.</span>
+                            <h4 class="reveal">The Phantom Emotion</h4>
+                        </div>
+                        <div class="taxonomy-sub reveal">The Pseudo-Partner</div>
+                        <p class="reveal reveal-delay-1">I document the &#8216;teleportation&#8217; of intimacy between individuals who have spent years constructing an alternate reality through screens. In Lacanian terms, the Phantom is a <em>fantasy</em> in the precise sense: a scenario staged to fill the gap in the Other, to make the unbearable structural impossibility of sexual relation feel temporary, contingent, soluble by sufficient bandwidth. The partner is not a &#8216;loved one&#8217; in any traditional sense, but a persistent projection of shared symbolic habit&#8212;a quilting point around which the subject&#8217;s desire coalesces without ever touching ground.</p>
+
+                        <!-- Sub-group A: Teleportation -->
+                        <div class="subgroup reveal reveal-delay-1">
+                            <div class="subgroup-label">&#8212; Teleportation</div>
+                            <div class="subgroup-grid subgroup-grid--3 subgroup-grid--teleportation">
+                                <div class="img-block" data-src="Picture6.jpg" data-cap="Teleportation I &#8212; The Phantom Emotion">
+                                    <img src="Picture6.jpg" alt="Teleportation I" draggable="false">
+                                    <div class="img-shield"></div>
+                                    <div class="img-caption">Fig IIIa.i Teleportation I</div>
+                                </div>
+                                <div class="img-block" data-src="Picture7.jpg" data-cap="Teleportation II &#8212; The Phantom Emotion">
+                                    <img src="Picture7.jpg" alt="Teleportation II" draggable="false">
+                                    <div class="img-shield"></div>
+                                    <div class="img-caption">Fig IIIa.ii Teleportation II</div>
+                                </div>
+                                <div class="img-block" data-src="Picture8.jpg" data-cap="Teleportation III &#8212; The Phantom Emotion">
+                                    <img src="Picture8.jpg" alt="Teleportation III" draggable="false">
+                                    <div class="img-shield"></div>
+                                    <div class="img-caption">Fig IIIa.iii Teleportation III</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sub-group B: Portraits of an Asshole -->
+                        <div class="subgroup reveal reveal-delay-2">
+                            <div class="subgroup-label">&#8212; Portraits of an Asshole</div>
+                            <div class="subgroup-grid subgroup-grid--5">
+                                <div class="img-block img-block--color" data-src="Picture9.jpg" data-cap="Portraits of an Asshole I">
+                                    <img src="Picture9.jpg" alt="Portrait I" draggable="false">
+                                    <div class="img-shield"></div>
+                                    <div class="img-caption">Fig IIIb.i</div>
+                                </div>
+                                <div class="img-block img-block--color" data-src="Picture10.jpg" data-cap="Portraits of an Asshole II">
+                                    <img src="Picture10.jpg" alt="Portrait II" draggable="false">
+                                    <div class="img-shield"></div>
+                                    <div class="img-caption">Fig IIIb.ii</div>
+                                </div>
+                                <div class="img-block img-block--color" data-src="Picture11.jpg" data-cap="Portraits of an Asshole III">
+                                    <img src="Picture11.jpg" alt="Portrait III" draggable="false">
+                                    <div class="img-shield"></div>
+                                    <div class="img-caption">Fig IIIb.iii</div>
+                                </div>
+                                <div class="img-block img-block--color" data-src="Picture12.jpg" data-cap="Portraits of an Asshole IV">
+                                    <img src="Picture12.jpg" alt="Portrait IV" draggable="false">
+                                    <div class="img-shield"></div>
+                                    <div class="img-caption">Fig IIIb.iv</div>
+                                </div>
+                                <div class="img-block img-block--color" data-src="Picture13.jpg" data-cap="Portraits of an Asshole V">
+                                    <img src="Picture13.jpg" alt="Portrait V" draggable="false">
+                                    <div class="img-shield"></div>
+                                    <div class="img-caption">Fig IIIb.v</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sub-group C: Reterritorialization -->
+                        <div class="subgroup reveal reveal-delay-3">
+                            <div class="subgroup-label">&#8212; Reterritorialization</div>
+                            <div class="subgroup-grid subgroup-grid--3">
+                                <div class="img-block img-block--color" data-src="Picture14.jpg" data-cap="Reterritorialization I">
+                                    <img src="Picture14.jpg" alt="Reterritorialization I" draggable="false">
+                                    <div class="img-shield"></div>
+                                    <div class="img-caption">Fig IIIc.i Reterritorialization I</div>
+                                </div>
+                                <div class="img-block img-block--color" data-src="Picture15.jpg" data-cap="Reterritorialization II">
+                                    <img src="Picture15.jpg" alt="Reterritorialization II" draggable="false">
+                                    <div class="img-shield"></div>
+                                    <div class="img-caption">Fig IIIc.ii Reterritorialization II</div>
+                                </div>
+                                <div class="img-block img-block--color" data-src="Picture16.jpg" data-cap="Reterritorialization III">
+                                    <img src="Picture16.jpg" alt="Reterritorialization III" draggable="false">
+                                    <div class="img-shield"></div>
+                                    <div class="img-caption">Fig IIIc.iii Reterritorialization III</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- II -->
+                    <div class="taxonomy-item">
+                        <div class="taxonomy-header">
+                            <span class="taxonomy-num">II.</span>
+                            <h4 class="reveal">The Digital Void</h4>
+                        </div>
+                        <div class="taxonomy-sub reveal">The Sterile Sanctuary</div>
+                        <p class="reveal reveal-delay-1">The digital interface constitutes a Void in the strict topological sense Lacan assigns to the torus: a non-place defined entirely by its hole. The shared geography of the digital couple is structurally identical to what Lacan calls the <em>Autre</em>&#8212;a location that is always-already barred. This Void is not an absence of space but the wrong kind of presence: a sterile sanctuary that stages connection as its alibi while enforcing, at the level of the Real, a permanent quarantine from the flesh of the other.</p>
+
+                        <!-- Group A: In the Void -->
+                        <div class="subgroup reveal reveal-delay-1">
+                            <div class="subgroup-label">&#8212; In the Void</div>
+                            <div class="subgroup-grid" style="grid-template-columns:1fr 1fr;">
+                                <div class="img-block" data-src="Picture21.jpg" data-cap="In the Void I">
+                                    <img src="Picture21.jpg" alt="In the Void I" draggable="false">
+                                    <div class="img-shield"></div>
+                                    <div class="img-caption">Fig IVa.i In the Void I</div>
+                                </div>
+                                <div class="img-block" data-src="Picture22.jpg" data-cap="In the Void II">
+                                    <img src="Picture22.jpg" alt="In the Void II" draggable="false">
+                                    <div class="img-shield"></div>
+                                    <div class="img-caption">Fig IVa.ii In the Void II</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Group B: Inhabiting the Void -->
+                        <div class="subgroup reveal reveal-delay-2">
+                            <div class="subgroup-label">&#8212; Inhabiting the Void</div>
+                            <div class="subgroup-grid" style="grid-template-columns:1fr 1fr;">
+                                <div class="img-block" data-src="Picture20.jpg" data-cap="Inhabiting the Void I">
+                                    <img src="Picture20.jpg" alt="Inhabiting the Void I" draggable="false">
+                                    <div class="img-shield"></div>
+                                    <div class="img-caption">Fig IVb.i Inhabiting the Void I</div>
+                                </div>
+                                <div class="img-block" data-src="Picture23.jpg" data-cap="Inhabiting the Void II">
+                                    <img src="Picture23.jpg" alt="Inhabiting the Void II" draggable="false">
+                                    <div class="img-shield"></div>
+                                    <div class="img-caption">Fig IVb.ii Inhabiting the Void II</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Group C: Objet Petit a -->
+                        <div class="subgroup reveal reveal-delay-3">
+                            <div class="subgroup-label">&#8212; Objet Petit <em>a</em></div>
+                            <div class="subgroup-grid subgroup-grid--3">
+                                <div class="img-block" data-src="Picture24.jpg" data-cap="Objet Petit a I">
+                                    <img src="Picture24.jpg" alt="Objet Petit a I" draggable="false">
+                                    <div class="img-shield"></div>
+                                    <div class="img-caption">Fig IVc.i Objet Petit <em>a</em> I</div>
+                                </div>
+                                <div class="img-block" data-src="Picture25.jpg" data-cap="Objet Petit a II">
+                                    <img src="Picture25.jpg" alt="Objet Petit a II" draggable="false">
+                                    <div class="img-shield"></div>
+                                    <div class="img-caption">Fig IVc.ii Objet Petit <em>a</em> II</div>
+                                </div>
+                                <div class="img-block" data-src="Picture26.jpg" data-cap="Objet Petit a III">
+                                    <img src="Picture26.jpg" alt="Objet Petit a III" draggable="false">
+                                    <div class="img-shield"></div>
+                                    <div class="img-caption">Fig IVc.iii Objet Petit <em>a</em> III</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- III -->
+                    <div class="taxonomy-item">
+                        <div class="taxonomy-header">
+                            <span class="taxonomy-num">III.</span>
+                            <h4 class="reveal">The Biological Glitch</h4>
+                        </div>
+                        <div class="taxonomy-sub reveal">Auto-Erotic Devolution</div>
+                        <p class="reveal reveal-delay-1">The Biological Glitch names what &#381;i&#382;ek calls the return of the Real within the symbolic: the moment the body refuses the clean architecture of mediated desire and asserts its own catastrophic logic. The Technosomatic Homunculus&#8212;the cortical map of the other, sedimented through years of digital habit&#8212;fires against a sensory vacuum, producing climax without contact. What Lacan called <em>jouissance</em> short-circuits the fantasy and collapses the couple back into the one. It is not failure. It is the system operating exactly as designed.</p>
+                        <div class="video-placeholder reveal reveal-delay-2" id="vr-trigger">
+                            <img src="video.jpg" alt="VR Experience" draggable="false">
+                            <div class="video-placeholder-overlay">
+                                <div class="video-play-btn"></div>
+                                <div class="video-placeholder-desc">
+                                    <span>A VR Experience</span>
+                                    Click for Video
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="text-right font-mono text-xs text-gray-500">
-                    &copy; 2026 Natasha Bajc<br>
-                    End of Autopsy.
+            </div>
+        </section>
+
+        <!-- STATEMENT -->
+        <section id="statement">
+            <div class="two-col" style="padding:6rem 4rem;">
+                <div class="manifesto-label-col reveal">
+                    <div class="section-label">03. Statement</div>
                 </div>
+                <div>
+                    <p class="statement-pullquote reveal">
+                        &#8220;Technosomatic Architecture utilizes the <span>female gaze</span> as a clinical lens.&#8221;
+                    </p>
+                    <div class="zizek-aside reveal reveal-delay-1">
+                        <div class="zizek-aside-label">Theoretical Frame</div>
+                        <p>Where Lacan insists there is no sexual relationship&#8212;only the endless, constitutive <em>failure</em> to achieve one&#8212;the digital interface promises to solve this impossibility through infrastructure. It cannot. It should not. The gap is not a bug in human sexuality. It is its engine.</p>
+                    </div>
+                    <p class="reveal reveal-delay-2">Moving away from the voyeuristic &#8220;God&#8217;s-eye view&#8221; of <strong>traditional representation</strong>, my work investigates the Synthetic Couple as a clinical specimen. By integrating the precision of structural engineering with the nuances of affective computing, I expose how digital mediums function as what &#381;i&#382;ek calls the <em>interpassive object</em>: the thing that enjoys on your behalf, so you don&#8217;t have to&#8212;and in doing so, forecloses the very encounter it simulates.</p>
+                    <div class="statement-images reveal reveal-delay-2">
+                        <div class="img-block" data-src="Picture4.jpg" data-cap="Fig VI. The Meeting with the Real">
+                            <img src="Picture4.jpg" alt="Statement Image" draggable="false">
+                            <div class="img-shield"></div>
+                            <div class="img-caption">Fig VI. The Meeting with the Real</div>
+                        </div>
+                        <div class="img-block" data-src="Picture5.jpg" data-cap="Fig VIb. Contact">
+                            <img src="Picture5.jpg" alt="Statement Image II" draggable="false">
+                            <div class="img-shield"></div>
+                            <div class="img-caption">Fig VIb. Contact</div>
+                        </div>
+                    </div>
+                    <p class="reveal reveal-delay-3">Through this pro-feminist reclamation of the somatic, I challenge the viewer to confront a reality where the digital interface is not a bridge but a mirror&#8212;and where we are never more alone than when we are <em>&#8220;together.&#8221;</em> This is not a tragedy to be corrected. It is the structural condition of subjectivity that the screen, at last, makes visible.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- GALLERY -->
+        <section id="gallery">
+            <div class="gallery-header">
+                <div class="gallery-title">04. Archive &#8212; Full Series</div>
+                <div class="gallery-count">26 Works</div>
+            </div>
+
+            <div class="gallery-section-label">&#8212; The Sterile Sanctuary</div>
+            <div class="gallery-grid">
+                <div class="img-block gallery-item reveal" data-src="Picture16.jpg" data-cap="Archive 02 &#8212; The Sterile Sanctuary">
+                    <img src="Picture16.jpg" alt="Archive 02" loading="lazy" draggable="false"><div class="img-shield"></div>
+                </div>
+                <div class="img-block gallery-item reveal reveal-delay-1" data-src="Picture17.jpg" data-cap="Archive 03 &#8212; The Sterile Sanctuary">
+                    <img src="Picture17.jpg" alt="Archive 03" loading="lazy" draggable="false"><div class="img-shield"></div>
+                </div>
+                <div class="img-block gallery-item reveal reveal-delay-2" data-src="Picture18.jpg" data-cap="Archive 04 &#8212; The Sterile Sanctuary">
+                    <img src="Picture18.jpg" alt="Archive 04" loading="lazy" draggable="false"><div class="img-shield"></div>
+                </div>
+            </div>
+
+            <div class="gallery-section-label">&#8212; Signal &amp; Void</div>
+            <div class="gallery-grid">
+                <div class="img-block gallery-item reveal" data-src="Picture19.jpg" data-cap="Archive 05 &#8212; Signal &amp; Void">
+                    <img src="Picture19.jpg" alt="Archive 05" loading="lazy" draggable="false"><div class="img-shield"></div>
+                </div>
+                <div class="img-block gallery-item reveal reveal-delay-1" data-src="Picture20.jpg" data-cap="Archive 06 &#8212; Signal &amp; Void">
+                    <img src="Picture20.jpg" alt="Archive 06" loading="lazy" draggable="false"><div class="img-shield"></div>
+                </div>
+                <div class="img-block gallery-item reveal reveal-delay-2" data-src="Picture21.jpg" data-cap="Archive 07 &#8212; Signal &amp; Void">
+                    <img src="Picture21.jpg" alt="Archive 07" loading="lazy" draggable="false"><div class="img-shield"></div>
+                </div>
+            </div>
+
+            <div class="gallery-section-label">&#8212; Collapse &amp; Residue</div>
+            <div class="gallery-grid" style="padding-bottom:4rem;">
+                <div class="img-block gallery-item reveal" data-src="Picture22.jpg" data-cap="Archive 08 &#8212; Collapse &amp; Residue">
+                    <img src="Picture22.jpg" alt="Archive 08" loading="lazy" draggable="false"><div class="img-shield"></div>
+                </div>
+                <div class="img-block gallery-item reveal reveal-delay-1" data-src="Picture23.jpg" data-cap="Archive 09 &#8212; Collapse &amp; Residue">
+                    <img src="Picture23.jpg" alt="Archive 09" loading="lazy" draggable="false"><div class="img-shield"></div>
+                </div>
+                <div class="img-block gallery-item reveal reveal-delay-2" data-src="Picture24.jpg" data-cap="Archive 10 &#8212; Collapse &amp; Residue">
+                    <img src="Picture24.jpg" alt="Archive 10" loading="lazy" draggable="false"><div class="img-shield"></div>
+                </div>
+                <div class="img-block gallery-item reveal" data-src="Picture25.jpg" data-cap="Archive 11 &#8212; Collapse &amp; Residue">
+                    <img src="Picture25.jpg" alt="Archive 11" loading="lazy" draggable="false"><div class="img-shield"></div>
+                </div>
+                <div class="img-block gallery-item reveal reveal-delay-1" data-src="Picture26.jpg" data-cap="Archive 12 &#8212; Collapse &amp; Residue">
+                    <img src="Picture26.jpg" alt="Archive 12" loading="lazy" draggable="false"><div class="img-shield"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer id="contact">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-name">Natasha Bajc</div>
+                    <div class="footer-role">Artist / Architect / AI Researcher</div>
+                </div>
+                <div class="footer-col">
+                    <h5>Practice</h5>
+                    <p>Technosomatic Architecture</p>
+                    <p>Nexus Hestia Technologies</p>
+                    <p>SCI-Arc / USC</p>
+                </div>
+                <div class="footer-col">
+                    <h5>Contact</h5>
+                    <a href="mailto:natasha@natashabajc.com" class="contact-box">Email</a>
+                    <a href="https://instagram.com/artnatashabajc" target="_blank" class="contact-box">Instagram</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&#169; 2026 Natasha Bajc. All rights reserved.</p>
+                <p>End of Autopsy.</p>
             </div>
         </footer>
-
     </main>
+
+    <script>
+        // ═══════════════════════════
+        // PROTECTION
+        // ═══════════════════════════
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('dragstart', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
+        document.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && ['s','u','p'].includes(e.key.toLowerCase())) e.preventDefault();
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && ['i','j','c'].includes(e.key.toLowerCase())) e.preventDefault();
+            if (e.key === 'F12') e.preventDefault();
+        });
+        window.addEventListener('beforeprint', e => e.preventDefault());
+
+        // ═══════════════════════════
+        // LIGHTBOX
+        // ═══════════════════════════
+        const lb = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lightbox-img');
+        const lbClose = document.getElementById('lightbox-close');
+        const lbPrev = document.getElementById('lightbox-prev');
+        const lbNext = document.getElementById('lightbox-next');
+        const lbCap = document.getElementById('lightbox-caption');
+        const lbCount = document.getElementById('lightbox-counter');
+
+        let images = [];
+        let idx = 0;
+
+        function buildImages() {
+            const els = document.querySelectorAll('[data-src]');
+            images = Array.from(els).map(el => ({
+                src: el.getAttribute('data-src'),
+                cap: el.getAttribute('data-cap') || ''
+            }));
+        }
+
+        function openLB(i) {
+            idx = i; updateLB();
+            lb.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLB() {
+            lb.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function updateLB() {
+            const item = images[idx];
+            lbImg.src = item.src;
+            lbCap.textContent = item.cap;
+            lbCount.textContent = (idx + 1) + ' / ' + images.length;
+            lbPrev.style.opacity = idx === 0 ? '0.3' : '1';
+            lbNext.style.opacity = idx === images.length - 1 ? '0.3' : '1';
+        }
+
+        function wireClicks() {
+            document.querySelectorAll('.img-shield').forEach(shield => {
+                const parent = shield.closest('[data-src]');
+                if (!parent) return;
+                shield.addEventListener('click', () => {
+                    const i = images.findIndex(x => x.src === parent.getAttribute('data-src'));
+                    if (i !== -1) openLB(i);
+                });
+            });
+            const heroShield = document.querySelector('.hero-shield');
+            if (heroShield) {
+                heroShield.addEventListener('click', () => {
+                    const i = images.findIndex(x => x.src === heroShield.getAttribute('data-src'));
+                    if (i !== -1) openLB(i);
+                });
+            }
+        }
+
+        lbClose.addEventListener('click', closeLB);
+        lbPrev.addEventListener('click', () => { if (idx > 0) { idx--; updateLB(); } });
+        lbNext.addEventListener('click', () => { if (idx < images.length - 1) { idx++; updateLB(); } });
+        lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
+        lbImg.addEventListener('contextmenu', e => e.preventDefault());
+        lbImg.addEventListener('dragstart', e => e.preventDefault());
+
+        document.addEventListener('keydown', e => {
+            if (!lb.classList.contains('open')) return;
+            if (e.key === 'Escape') closeLB();
+            if (e.key === 'ArrowLeft' && idx > 0) { idx--; updateLB(); }
+            if (e.key === 'ArrowRight' && idx < images.length - 1) { idx++; updateLB(); }
+        });
+
+        let tsX = 0;
+        lb.addEventListener('touchstart', e => { tsX = e.touches[0].clientX; });
+        lb.addEventListener('touchend', e => {
+            const dx = e.changedTouches[0].clientX - tsX;
+            if (Math.abs(dx) > 50) {
+                if (dx < 0 && idx < images.length - 1) { idx++; updateLB(); }
+                if (dx > 0 && idx > 0) { idx--; updateLB(); }
+            }
+        });
+
+        // ═══════════════════════════
+        // SCROLL REVEAL
+        // ═══════════════════════════
+        const reveals = document.querySelectorAll('.reveal');
+        const ro = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); } });
+        }, { threshold: 0.08 });
+        reveals.forEach(r => ro.observe(r));
+
+        // ═══════════════════════════
+        // ACTIVE NAV
+        // ═══════════════════════════
+        const sects = document.querySelectorAll('section[id], footer[id]');
+        const navLinks = document.querySelectorAll('nav ul li a');
+        const no = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    const a = document.querySelector('nav a[data-section="' + e.target.id + '"]');
+                    if (a) a.classList.add('active');
+                }
+            });
+        }, { threshold: 0.3 });
+        sects.forEach(s => no.observe(s));
+
+        // ═══════════════════════════
+        // MOBILE NAV
+        // ═══════════════════════════
+        const hbg = document.getElementById('hamburger');
+        const navEl = document.getElementById('nav');
+        hbg.addEventListener('click', () => { hbg.classList.toggle('open'); navEl.classList.toggle('mobile-open'); });
+        navEl.querySelectorAll('a').forEach(l => l.addEventListener('click', () => { hbg.classList.remove('open'); navEl.classList.remove('mobile-open'); }));
+
+
+        // ═══════════════════════════
+        // VIDEO POPUP (YouTube)
+        // ═══════════════════════════
+        const vlb = document.getElementById('video-lightbox');
+        const ytPlayer = document.getElementById('yt-player');
+        const vlbClose = document.getElementById('video-lightbox-close');
+
+        document.getElementById('vr-trigger').addEventListener('click', () => {
+            ytPlayer.src = ytPlayer.getAttribute('data-src');
+            vlb.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        });
+
+        function closeVLB() {
+            vlb.classList.remove('open');
+            document.body.style.overflow = '';
+            ytPlayer.src = ''; // stops playback
+        }
+
+        vlbClose.addEventListener('click', closeVLB);
+        vlb.addEventListener('click', e => { if (e.target === vlb) closeVLB(); });
+        document.addEventListener('keydown', e => {
+            if (vlb.classList.contains('open') && e.key === 'Escape') closeVLB();
+        });
+
+        // ═══════════════════════════
+        // INIT
+        // ═══════════════════════════
+        buildImages();
+        wireClicks();
+    </script>
 </body>
 </html>
-
-```
